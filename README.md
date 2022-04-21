@@ -23,7 +23,7 @@ What to adjust:
     <img src="/images/logo.png" alt="Logo" height="200">
   </a>
 
-<h3 align="center">DigiWF <i>repo or project name</i></h3>
+<h3 align="center">KID <i>Kooperation Indoor Navigation</i></h3>
 
   <p align="center">
     <i>Add a here a short description</i>
