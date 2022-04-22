@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "801931101601",
+    "project_id": "kandlinf-lhm",
+    "storage_bucket": "kandlinf-lhm.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:801931101601:android:3b8e3a556ed6759b4477e0",
+        "android_client_info": {
+          "package_name": "com.example.admintool"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "801931101601-lg5g4k2gcmm3knbfjnbe00i19d11su2b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCD01A4oYu9hW4kcqheWvKgzdmLBKjBctA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "801931101601-lg5g4k2gcmm3knbfjnbe00i19d11su2b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
