@@ -7,7 +7,11 @@
         {
             "name": "admintool",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "args": [
+                "-d",
+                "chrome"
+            ]
         },
         {
             "name": "admintool (profile mode)",
