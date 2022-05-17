@@ -78,6 +78,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.4"
+  data:
+    dependency: transitive
+    description:
+      name: data
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.10.0"
   desktop_webview_auth:
     dependency: transitive
     description:
@@ -92,6 +99,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
+  epitaph_ips:
+    dependency: "direct main"
+    description:
+      name: epitaph_ips
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.1"
   fake_async:
     dependency: transitive
     description:
@@ -329,6 +343,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.7.0"
+  ml_linalg:
+    dependency: transitive
+    description:
+      name: ml_linalg
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "13.9.0"
+  more:
+    dependency: transitive
+    description:
+      name: more
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.5.0"
   path:
     dependency: transitive
     description:
