@@ -33,7 +33,10 @@ class MapViewPageState2 extends State<MapViewPage2> {
 
   @override
   Widget build(BuildContext context) {
-    return _buildMapViewBody(context);
+    return Scaffold(
+      appBar: _buildHead(context) as PreferredSizeWidget,
+      body: _buildMapViewBody(context),
+    );
   }
 
   /// Constructs the [AppBar] of the [MapViewPage] page.

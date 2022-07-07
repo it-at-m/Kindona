@@ -38,7 +38,12 @@ class MapDownloadPageState extends State<MapDownloadPage> {
 
   @override
   Widget build(BuildContext context) {
-    return _buildDownloadProgressBody();
+  return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.mapFileData.displayedName),
+      ),
+      body: _buildDownloadProgressBody(),
+    );
   }
 
   Widget _buildDownloadProgressBody() {
