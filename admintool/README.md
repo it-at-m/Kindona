@@ -66,5 +66,10 @@ cd digilab_firestore_test
 flutterfire configure
 ```
 
+7) iOS App registrieren
+7.1) app/ios/Runner.xcworkspace mit XCode öffnen
+7.2) Runner/General: Bundle Identifier: eindeutigen Namen hinterlegen, e.g. de.hamburg.lsbg.kid.admintool
+7.3) Runner/Signing & Capabilities: Team auswählen (All)
+
 # admintool
 
