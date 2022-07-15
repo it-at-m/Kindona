@@ -237,6 +237,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_beacon:
+    dependency: "direct main"
+    description:
+      name: flutter_beacon
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.5.1"
   flutter_facebook_auth:
     dependency: transitive
     description:
@@ -294,6 +301,48 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.0+4"
+  geolocator:
+    dependency: "direct main"
+    description:
+      name: geolocator
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "9.0.1"
+  geolocator_android:
+    dependency: transitive
+    description:
+      name: geolocator_android
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.2"
+  geolocator_apple:
+    dependency: transitive
+    description:
+      name: geolocator_apple
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.2.1"
+  geolocator_platform_interface:
+    dependency: transitive
+    description:
+      name: geolocator_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.6"
+  geolocator_web:
+    dependency: transitive
+    description:
+      name: geolocator_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.6"
+  geolocator_windows:
+    dependency: transitive
+    description:
+      name: geolocator_windows
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.1"
   google_sign_in:
     dependency: transitive
     description:

@@ -170,9 +170,12 @@ class FileMgr {
     Uri uri = Uri.parse(source);
     if (uri.scheme.isNotEmpty) scheme = uri.scheme;
     if (uri.host.isNotEmpty) host = uri.host;
+
+    print('downloadnow2: ' + uri.queryParametersAll.toString());
+
     port = uri.port;
     path = uri.path;
-    return downloadNow(scheme, host, port, path, ignoreCertificate);
+    return downloadNow(scheme, host, port, path, ignoreCertificate, uri.queryParametersAll);
   }
 
   /// Downloads content from internet. This method is meant for smaller files since the
@@ -180,10 +183,10 @@ class FileMgr {
   /// ssl connection is ignored and the file is downloaded anyway.
   Future<List<int>> downloadNow(
       String scheme, String host, int port, String path,
-      [bool ignoreCertificate = false]) async {
+      [bool ignoreCertificate = false, Map<String, dynamic>? parameters]) async {
     try {
       List<int> content = await _downloadNowToMemory(
-          scheme, host, port, path, ignoreCertificate);
+          scheme, host, port, path, ignoreCertificate, parameters);
       return content;
     } catch (error, stacktrace) {
       _log.warning(
@@ -224,7 +227,7 @@ class FileMgr {
   /// In case of error the calling method must send a _fileDownloadInject error
   Future<List<int>> _downloadNowToMemory(
       String scheme, String host, int port, String path,
-      [bool ignoreCertificate = false]) async {
+      [bool ignoreCertificate = false, Map<String, dynamic>? parameters]) async {
     if (path.startsWith("/")) path = path.substring(1);
     _log.info(
         "file will be downloaded from $scheme://$host:$port/$path into memory");
@@ -233,8 +236,14 @@ class FileMgr {
       _httpOverrides.addException(host, port);
     }
     int lastTime = DateTime.now().millisecondsSinceEpoch;
+    var uri = Uri.parse("$scheme://$host:$port/$path");
+    if (parameters != null) {
+      uri = uri.replace(queryParameters: parameters);
+    }
+    print('_downloadNowToMemory: ' + uri.toString());
     http.Request req =
-        http.Request('GET', Uri.parse("$scheme://$host:$port/$path"));
+        http.Request('GET', uri);
+
     http.StreamedResponse response = await req.send();
     int total = response.contentLength ?? 0;
     int count = 0;
@@ -259,14 +268,13 @@ class FileMgr {
   }
 
   Future<void> downloadNowToFile(
-      String scheme, String host, int port, String path, String destination,
+      String uri, String destination,
       [bool ignoreCertificate = false]) async {
     try {
-      await _downloadNowToFile(
-          scheme, host, port, path, destination, ignoreCertificate);
+      await _downloadNowToFile(uri, destination, ignoreCertificate);
     } catch (error, stacktrace) {
       _fileDownloadInject.add(
-          FileDownloadEvent.error("$scheme://$host:$port/$path", destination));
+          FileDownloadEvent.error(uri, destination));
       throw error;
     }
   }
@@ -282,8 +290,7 @@ class FileMgr {
     if (uri.host.isNotEmpty) host = uri.host;
     port = uri.port;
     path = uri.path;
-    return downloadNowToFile(
-        scheme, host, port, path, destination, ignoreCertificate);
+    return downloadNowToFile(source, destination, ignoreCertificate);
   }
 
   /// In case of error the calling method must
@@ -291,19 +298,19 @@ class FileMgr {
   ///       _downloadTasks.remove(info.source);
   //       unawaited(_downloadNext());
   Future<void> _downloadNowToFile(
-      String scheme, String host, int port, String path, String destination,
+      String uri, String destination,
       [bool ignoreCertificate = false]) async {
-    if (path.startsWith("/")) path = path.substring(1);
-    String source = "$scheme://$host:$port/$path";
+    String source = uri;
     _log.info(
-        "file will be downloaded from $scheme://$host:$port/$path to $destination");
+        "file will be downloaded from $uri to $destination");
 
+    var parsed = Uri.parse(uri);
     if (ignoreCertificate) {
-      _httpOverrides.addException(host, port);
+      _httpOverrides.addException(parsed.host, parsed.port);
     }
     int lastTime = DateTime.now().millisecondsSinceEpoch;
     http.Request req =
-        http.Request('GET', Uri.parse("$scheme://$host:$port/$path"));
+        http.Request('GET', parsed);
     http.StreamedResponse response = await req.send();
 
     int total = response.contentLength ?? 0;
@@ -367,19 +374,19 @@ class FileMgr {
     if (uri.host.isNotEmpty) host = uri.host;
     port = uri.port;
     path = uri.path;
-    return downloadToFile(scheme, host, port, path, destination);
+    return downloadToFile(source, destination);
   }
 
   /// Downloads a file to the filesystem. If the source ends with .zip or .gz and the destination
   /// does not end with the same suffix the file will be unzipped. Adds the file to a queue if there
   /// are too many files currently downloading.
-  Future<bool> downloadToFile(String scheme, String host, int port, String path,
+  Future<bool> downloadToFile(String source,
       String destination) async {
     assert(destination != "");
-    if (path.startsWith("/")) path = path.substring(1);
-    String source = "$scheme://$host:$port/$path";
+    var uri = Uri.parse(source);
+    print('downloadToFile: ' + uri.toString());
     _DownloadInfo? info = _downloadTasks.values
-        .firstWhereOrNull((element) => element.source == source);
+        .firstWhereOrNull((element) => element.source == uri.toString());
     if (info != null) {
       _log.warning(
           "File $source already in downloadqueue, ignoring the downloadrequest");
@@ -391,12 +398,10 @@ class FileMgr {
         .length;
     if (active >= _maxConcurrentDownloads) {
       info = _DownloadInfo(
-          scheme: scheme,
-          host: host,
-          port: port,
-          path: path,
+          source: uri.toString(),
           destination: destination,
           status: _DOWNLOADINFOSTATUS.QUEUED);
+      info.source = uri.toString();
       _downloadTasks[source] = info;
       _log.info(
           "file will be downloaded later from $source and stored at $destination");
@@ -405,15 +410,12 @@ class FileMgr {
 
     try {
       info = _DownloadInfo(
-          scheme: scheme,
-          host: host,
-          port: port,
-          path: path,
+          source: source,
           destination: destination,
           status: _DOWNLOADINFOSTATUS.DOWNLOADING);
       _downloadTasks[source] = info;
 
-      await _downloadNowToFile(scheme, host, port, path, destination);
+      await _downloadNowToFile(source, destination);
       _downloadTasks.remove(info.source);
       unawaited(_downloadNext());
     } catch (error, stacktrace) {
@@ -431,7 +433,7 @@ class FileMgr {
       info.status = _DOWNLOADINFOSTATUS.DOWNLOADING;
       try {
         await _downloadNowToFile(
-            info.scheme, info.host, info.port, info.path, info.destination);
+            info.source, info.destination);
       } catch (error, stacktrace) {
         _fileDownloadInject
             .add(FileDownloadEvent.error(info.source, info.destination));
@@ -505,10 +507,6 @@ enum _DOWNLOADINFOSTATUS {
 /////////////////////////////////////////////////////////////////////////////
 
 class _DownloadInfo {
-  final String scheme;
-  final String host;
-  final int port;
-  final String path;
 
   /// The url to download from
   late final String source;
@@ -519,14 +517,9 @@ class _DownloadInfo {
   _DOWNLOADINFOSTATUS status;
 
   _DownloadInfo(
-      {required this.scheme,
-      required this.host,
-      required this.port,
-      required this.path,
+      {required source,
       required this.destination,
-      required this.status}) {
-    source = "$scheme://$host:$port/$path";
-  }
+      required this.status});
 
   @override
   String toString() {

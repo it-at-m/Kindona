@@ -36,6 +36,21 @@ class MapViewPageState2 extends State<MapViewPage2> {
     return Scaffold(
       appBar: _buildHead(context) as PreferredSizeWidget,
       body: _buildMapViewBody(context),
+      drawer: Drawer(
+          child: Column(
+            children: [
+              const Text('Navigation'),
+              ListTile(
+                title: const Text('Home'),
+                onTap: () => Navigator.pushNamed(context, '/'),
+              ),
+              ListTile(
+                title: const Text('Debug'),
+                onTap: () => Navigator.pushNamed(context, '/debug'),
+              )
+            ],
+          )
+      ),
     );
   }
 
