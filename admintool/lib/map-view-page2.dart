@@ -1,3 +1,4 @@
+import 'package:admintool/map/UserPositionMarker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,6 +7,8 @@ import 'markerdemo-datastore.dart';
 import 'package:mapsforge_flutter/core.dart';
 import 'package:mapsforge_flutter/datastore.dart';
 import 'package:mapsforge_flutter/maps.dart';
+import 'package:admintool/services/gps_service.dart';
+import 'package:admintool/map/PositionOverlay.dart';
 
 import 'map-file-data.dart';
 
@@ -30,6 +33,28 @@ class MapViewPage2 extends StatefulWidget {
 /// The [State] of the [MapViewPage] Widget.
 class MapViewPageState2 extends State<MapViewPage2> {
   final DisplayModel displayModel = DisplayModel();
+
+  final GpsService gps = GpsService();
+  ViewModel? viewModel;
+
+  @override
+  void initState() {
+    gps.determinePosition()
+      .then((pos) {
+        if (viewModel != null) {
+          viewModel!.setMapViewPosition(pos.latitude, pos.longitude);
+        }
+      }).then((value) => gps.startPositioning());
+
+    GpsService.observe.listen((pos) => setState(() => {}));
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    gps.stopPositioning();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,25 +103,38 @@ class MapViewPageState2 extends State<MapViewPage2> {
 
   ViewModel _createViewModel() {
     // in this demo we use the markers only for offline databases.
-    ViewModel viewModel = ViewModel(
+    viewModel = ViewModel(
       displayModel: displayModel,
       contextMenuBuilder: widget.mapFileData.mapType == MAPTYPE.OFFLINE
           ? MarkerdemoContextMenuBuilder()
           : const DefaultContextMenuBuilder(),
     );
-    if (widget.mapFileData.indoorZoomOverlay)
-      viewModel.addOverlay(IndoorlevelZoomOverlay(viewModel,
+    if (widget.mapFileData.indoorZoomOverlay) {
+      viewModel!.addOverlay(IndoorlevelZoomOverlay(viewModel!,
           indoorLevels: widget.mapFileData.indoorLevels));
-    else
-      viewModel.addOverlay(ZoomOverlay(viewModel));
-    viewModel.addOverlay(DistanceOverlay(viewModel));
+    } else {
+      viewModel!.addOverlay(ZoomOverlay(viewModel!));
+    }
+    viewModel!.addOverlay(DistanceOverlay(viewModel!));
+    viewModel!.addOverlay(PositionOverlay(onPressed: _setViewModelLocationToPosition, position: () => gps.lastPos,));
     //viewModel.addOverlay(DemoOverlay(viewModel: viewModel));
 
     // set default position
-    viewModel.setMapViewPosition(widget.mapFileData.initialPositionLat,
-        widget.mapFileData.initialPositionLong);
-    viewModel.setZoomLevel(widget.mapFileData.initialZoomLevel);
-    return viewModel;
+    if (gps.lastPos != null) {
+      viewModel!.setMapViewPosition(gps.lastPos!.latitude, gps.lastPos!.longitude);
+    } else {
+      viewModel!.setMapViewPosition(widget.mapFileData.initialPositionLat,
+          widget.mapFileData.initialPositionLong);
+    }
+    viewModel!.setZoomLevel(widget.mapFileData.initialZoomLevel);
+
+    return viewModel!;
+  }
+
+  _setViewModelLocationToPosition() {
+    if (viewModel != null && gps.lastPos != null) {
+      viewModel!.setMapViewPosition(gps.lastPos!.latitude, gps.lastPos!.longitude);
+    }
   }
 
   Future<MapModel> _createOfflineMapModel() async {
@@ -138,6 +176,8 @@ class MapViewPageState2 extends State<MapViewPage2> {
     );
     mapModel.markerDataStores
         .add(MarkerdemoDatastore(symbolCache: symbolCache));
+    mapModel.markerDataStores
+        .add(UserPositionMarker(symbolCache: symbolCache));
 
     return mapModel;
   }
