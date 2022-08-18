@@ -19,7 +19,9 @@ import 'package:ml_linalg/linalg.dart';
 
 class BleService {
 
-  final BehaviorSubject<Pos> positionStream = BehaviorSubject();
+  static final BehaviorSubject<Pos> positionStream = BehaviorSubject();
+
+  static Stream<Pos> get observe => positionStream.stream;
 
   final Map<String, epi.Beacon> beacons = {
     'E4:E1:12:9A:49:C3': epi.RealBeacon('E4:E1:12:9A:49:C3', 'blukii', Point(0,0)),

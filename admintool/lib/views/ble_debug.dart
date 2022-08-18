@@ -15,7 +15,7 @@ class _BleDebugWidgetState extends State<BleDebugWidget> with WidgetsBindingObse
 
   Pos? _pos;
 
-  List<Beacon> beaconSource = [
+  static List<Beacon> beaconSource = [
     Beacon('E4:E1:12:9A:49:C3', Pos(48.119074319288565, 11.531706669465034)),
     Beacon('E4:E1:12:9A:4A:03', Pos(48.11908247754796, 11.531673866862608)),
     Beacon('E4:E1:12:9A:4A:0F', Pos(48.119063676229175, 11.531631622074215)),
@@ -24,7 +24,7 @@ class _BleDebugWidgetState extends State<BleDebugWidget> with WidgetsBindingObse
   ];
 
   _BleDebugWidgetState() {
-    service.positionStream.listen((value) => setState(() => _pos = value));
+    BleService.observe.listen((value) => setState(() => _pos = value));
     service.setBeacons(beaconSource);
   }
 

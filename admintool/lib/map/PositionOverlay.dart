@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+
+import '../services/ble_service.dart';
 
 class PositionOverlay extends StatefulWidget {
   late void Function() onPressed;
-  late Position? Function() position;
+  late Pos? Function() position;
 
   PositionOverlay({Key? key, required this.onPressed, required this.position}) : super(key: key);
 

@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:admintool/services/gps_service.dart';
+import 'package:admintool/services/position_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mapsforge_flutter/core.dart';
 import 'package:mapsforge_flutter/marker.dart';
+
+import '../services/ble_service.dart';
 
 /// a Datastore holds markers and decides which markers to show for a given zoomLevel
 /// and boundary. This example is a bit more complex. Initially we do not have
@@ -15,22 +18,22 @@ import 'package:mapsforge_flutter/marker.dart';
 class UserPositionMarker extends MarkerByItemDataStore {
   final SymbolCache symbolCache;
 
-  Position? position;
+  Pos? position;
 
   UserPositionMarker({required this.symbolCache, this.position}) {
-    GpsService.observe.listen((pos) { position = pos; setRepaint(); });
+    PositionService.observe.listen((pos) { position = pos; setRepaint(); });
   }
 
   @override
   Future<void> retrieveMarkersFor(BoundingBox boundary, int zoomLevel) async {
-    if (position != null && boundary.contains(position!.latitude, position!.longitude)) {
+    if (position != null && boundary.contains(position!.lat, position!.lon)) {
       addMarker(await _createMarker());
     }
   }
 
   Future<Marker> _createMarker() async {
     PoiMarker marker = PoiMarker(
-      latLong: LatLong(position!.latitude, position!.longitude),
+      latLong: LatLong(position!.lat, position!.lon),
       src: "packages/mapsforge_flutter/assets/symbols/dot_blue.svg",
       width: 80,
       height: 80,
