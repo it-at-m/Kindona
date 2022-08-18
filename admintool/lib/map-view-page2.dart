@@ -1,4 +1,6 @@
 import 'package:admintool/map/UserPositionMarker.dart';
+import 'package:admintool/services/ble_service.dart';
+import 'package:admintool/services/position_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,7 +9,6 @@ import 'markerdemo-datastore.dart';
 import 'package:mapsforge_flutter/core.dart';
 import 'package:mapsforge_flutter/datastore.dart';
 import 'package:mapsforge_flutter/maps.dart';
-import 'package:admintool/services/gps_service.dart';
 import 'package:admintool/map/PositionOverlay.dart';
 
 import 'map-file-data.dart';
@@ -34,20 +35,15 @@ class MapViewPage2 extends StatefulWidget {
 class MapViewPageState2 extends State<MapViewPage2> {
   final DisplayModel displayModel = DisplayModel();
 
-  final GpsService gps = GpsService();
+  final PositionService gps = PositionService();
+  Pos? _pos;
   ViewModel? viewModel;
 
   @override
   void initState() {
-    gps.determinePosition()
-      .then((pos) {
-        if (viewModel != null) {
-          viewModel!.setMapViewPosition(pos.latitude, pos.longitude);
-        }
-      }).then((value) => gps.startPositioning());
-
-    GpsService.observe.listen((pos) => setState(() => {}));
     super.initState();
+    PositionService.observe.listen((pos) => setState(() => {_pos = pos}));
+    gps.startPositioning();
   }
 
   @override
@@ -116,12 +112,12 @@ class MapViewPageState2 extends State<MapViewPage2> {
       viewModel!.addOverlay(ZoomOverlay(viewModel!));
     }
     viewModel!.addOverlay(DistanceOverlay(viewModel!));
-    viewModel!.addOverlay(PositionOverlay(onPressed: _setViewModelLocationToPosition, position: () => gps.lastPos,));
+    viewModel!.addOverlay(PositionOverlay(onPressed: _setViewModelLocationToPosition, position: () => _pos));
     //viewModel.addOverlay(DemoOverlay(viewModel: viewModel));
 
     // set default position
-    if (gps.lastPos != null) {
-      viewModel!.setMapViewPosition(gps.lastPos!.latitude, gps.lastPos!.longitude);
+    if (_pos != null) {
+      viewModel!.setMapViewPosition(_pos!.lat, _pos!.lon);
     } else {
       viewModel!.setMapViewPosition(widget.mapFileData.initialPositionLat,
           widget.mapFileData.initialPositionLong);
@@ -132,8 +128,8 @@ class MapViewPageState2 extends State<MapViewPage2> {
   }
 
   _setViewModelLocationToPosition() {
-    if (viewModel != null && gps.lastPos != null) {
-      viewModel!.setMapViewPosition(gps.lastPos!.latitude, gps.lastPos!.longitude);
+    if (viewModel != null && _pos != null) {
+      viewModel!.setMapViewPosition(_pos!.lat, _pos!.lon);
     }
   }
 
