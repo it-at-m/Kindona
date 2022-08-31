@@ -160,6 +160,7 @@ class MapViewPageState2 extends State<MapViewPage2> {
     } else {
       bitmapCache =
           await FileTileBitmapCache.create(jobRenderer.getRenderKey());
+      bitmapCache.purgeAll();
     }
 
     /// Now we can glue together and instantiate the mapModel and the viewModel. The former holds the
