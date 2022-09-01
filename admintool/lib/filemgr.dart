@@ -165,31 +165,33 @@ class FileMgr {
       [bool ignoreCertificate = false]) {
     String scheme = "https";
     String host = "";
+    String query = "";
     int port = 443;
     String path = "";
     Uri uri = Uri.parse(source);
     if (uri.scheme.isNotEmpty) scheme = uri.scheme;
     if (uri.host.isNotEmpty) host = uri.host;
+    if (uri.query.isNotEmpty) query = uri.query;
     port = uri.port;
     path = uri.path;
-    return downloadNow(scheme, host, port, path, ignoreCertificate);
+    return downloadNow(scheme, host, port, path, query, ignoreCertificate);
   }
 
   /// Downloads content from internet. This method is meant for smaller files since the
   /// download takes place in memory only. If [ignoreCertificate] is true an invalid certificate for an
   /// ssl connection is ignored and the file is downloaded anyway.
   Future<List<int>> downloadNow(
-      String scheme, String host, int port, String path,
+      String scheme, String host, int port, String path, String query,
       [bool ignoreCertificate = false]) async {
     try {
       List<int> content = await _downloadNowToMemory(
-          scheme, host, port, path, ignoreCertificate);
+          scheme, host, port, path, query, ignoreCertificate);
       return content;
     } catch (error, stacktrace) {
       _log.warning(
-          "Error while downloading file from $scheme://$host:$port/$path: $error");
-      _fileDownloadInject.add(
-          FileDownloadEvent.error("$scheme://$host:$port/$path", "memory"));
+          "Error while downloading file from $scheme://$host:$port/$path?$query: $error");
+      _fileDownloadInject.add(FileDownloadEvent.error(
+          "$scheme://$host:$port/$path?$query", "memory"));
       throw error;
     }
   }
@@ -199,31 +201,31 @@ class FileMgr {
   /// download takes place in memory only. If [ignoreCertificate] is true an invalid certificate for an
   /// ssl connection is ignored and the file is downloaded anyway.
   Future<List<int>> downloadAndCacheNow(
-      String scheme, String host, int port, String path,
+      String scheme, String host, int port, String path, String query,
       [bool ignoreCertificate = false]) async {
     PathHandler pathHandler = await getTempPathHandler("");
-    String filename = "$scheme://$host:$port/$path";
+    String filename = "$scheme://$host:$port/$path?$query";
     filename = pathHandler
         .getPath("${getCrc32(filename.codeUnits).toRadixString(16)}");
     File file = File(filename);
     if (await file.exists()) return file.readAsBytes();
     try {
       List<int> content = await _downloadNowToMemory(
-          scheme, host, port, path, ignoreCertificate);
+          scheme, host, port, path, query, ignoreCertificate);
       await saveFileAbsolute(filename, content);
       return content;
     } catch (error, stacktrace) {
       _log.warning(
-          "Error while downloading file from $scheme://$host:$port/$path: $error");
-      _fileDownloadInject.add(
-          FileDownloadEvent.error("$scheme://$host:$port/$path", "memory"));
+          "Error while downloading file from $scheme://$host:$port/$path?$query: $error");
+      _fileDownloadInject.add(FileDownloadEvent.error(
+          "$scheme://$host:$port/$path?$query", "memory"));
       throw error;
     }
   }
 
   /// In case of error the calling method must send a _fileDownloadInject error
   Future<List<int>> _downloadNowToMemory(
-      String scheme, String host, int port, String path,
+      String scheme, String host, int port, String path, String query,
       [bool ignoreCertificate = false]) async {
     if (path.startsWith("/")) path = path.substring(1);
     _log.info(
@@ -234,13 +236,13 @@ class FileMgr {
     }
     int lastTime = DateTime.now().millisecondsSinceEpoch;
     http.Request req =
-        http.Request('GET', Uri.parse("$scheme://$host:$port/$path"));
+        http.Request('GET', Uri.parse("$scheme://$host:$port/$path?$query"));
     http.StreamedResponse response = await req.send();
     int total = response.contentLength ?? 0;
     int count = 0;
     List<int> content = [];
     _fileDownloadInject.add(FileDownloadEvent.progress(
-        "$scheme://$host:$port/$path", "memory", count, total));
+        "$scheme://$host:$port/$path?$query", "memory", count, total));
     await response.stream.forEach((List<int> value) {
       int time = DateTime.now().millisecondsSinceEpoch;
       count += value.length;
@@ -249,24 +251,24 @@ class FileMgr {
         _log.info(
             "Received $count of $total bytes (${(total == 0) ? "unknown" : (count / total * 100).round()} %) for memory");
         _fileDownloadInject.add(FileDownloadEvent.progress(
-            "$scheme://$host:$port/$path", "memory", count, total));
+            "$scheme://$host:$port/$path?$query", "memory", count, total));
         lastTime = time;
       }
     });
     _fileDownloadInject.add(FileDownloadEvent.finish(
-        "$scheme://$host:$port/$path", "memory", content));
+        "$scheme://$host:$port/$path?$query", "memory", content));
     return content;
   }
 
-  Future<void> downloadNowToFile(
-      String scheme, String host, int port, String path, String destination,
+  Future<void> downloadNowToFile(String scheme, String host, int port,
+      String path, String query, String destination,
       [bool ignoreCertificate = false]) async {
     try {
       await _downloadNowToFile(
-          scheme, host, port, path, destination, ignoreCertificate);
+          scheme, host, port, path, query, destination, ignoreCertificate);
     } catch (error, stacktrace) {
-      _fileDownloadInject.add(
-          FileDownloadEvent.error("$scheme://$host:$port/$path", destination));
+      _fileDownloadInject.add(FileDownloadEvent.error(
+          "$scheme://$host:$port/$path?$query", destination));
       throw error;
     }
   }
@@ -277,24 +279,27 @@ class FileMgr {
     String host = "";
     int port = 443;
     String path = "";
+    String query = "";
     Uri uri = Uri.parse(source);
     if (uri.scheme.isNotEmpty) scheme = uri.scheme;
     if (uri.host.isNotEmpty) host = uri.host;
+    if (uri.query.isNotEmpty) query = uri.query;
+
     port = uri.port;
     path = uri.path;
     return downloadNowToFile(
-        scheme, host, port, path, destination, ignoreCertificate);
+        scheme, host, port, path, query, destination, ignoreCertificate);
   }
 
   /// In case of error the calling method must
   //       _fileDownloadInject.add(FileDownloadEvent.error(destination));
   ///       _downloadTasks.remove(info.source);
   //       unawaited(_downloadNext());
-  Future<void> _downloadNowToFile(
-      String scheme, String host, int port, String path, String destination,
+  Future<void> _downloadNowToFile(String scheme, String host, int port,
+      String path, String query, String destination,
       [bool ignoreCertificate = false]) async {
     if (path.startsWith("/")) path = path.substring(1);
-    String source = "$scheme://$host:$port/$path";
+    String source = "$scheme://$host:$port/$path?$query";
     _log.info(
         "file will be downloaded from $scheme://$host:$port/$path to $destination");
 
@@ -303,7 +308,7 @@ class FileMgr {
     }
     int lastTime = DateTime.now().millisecondsSinceEpoch;
     http.Request req =
-        http.Request('GET', Uri.parse("$scheme://$host:$port/$path"));
+        http.Request('GET', Uri.parse("$scheme://$host:$port/$path?$query"));
     http.StreamedResponse response = await req.send();
 
     int total = response.contentLength ?? 0;
@@ -362,22 +367,24 @@ class FileMgr {
     String host = "";
     int port = 443;
     String path = "";
+    String query = "";
     Uri uri = Uri.parse(source);
     if (uri.scheme.isNotEmpty) scheme = uri.scheme;
     if (uri.host.isNotEmpty) host = uri.host;
+    if (uri.query.isNotEmpty) query = uri.query;
     port = uri.port;
     path = uri.path;
-    return downloadToFile(scheme, host, port, path, destination);
+    return downloadToFile(scheme, host, port, path, query, destination);
   }
 
   /// Downloads a file to the filesystem. If the source ends with .zip or .gz and the destination
   /// does not end with the same suffix the file will be unzipped. Adds the file to a queue if there
   /// are too many files currently downloading.
   Future<bool> downloadToFile(String scheme, String host, int port, String path,
-      String destination) async {
+      String query, String destination) async {
     assert(destination != "");
     if (path.startsWith("/")) path = path.substring(1);
-    String source = "$scheme://$host:$port/$path";
+    String source = "$scheme://$host:$port/$path?$query";
     _DownloadInfo? info = _downloadTasks.values
         .firstWhereOrNull((element) => element.source == source);
     if (info != null) {
@@ -395,6 +402,7 @@ class FileMgr {
           host: host,
           port: port,
           path: path,
+          query: query,
           destination: destination,
           status: _DOWNLOADINFOSTATUS.QUEUED);
       _downloadTasks[source] = info;
@@ -409,11 +417,12 @@ class FileMgr {
           host: host,
           port: port,
           path: path,
+          query: query,
           destination: destination,
           status: _DOWNLOADINFOSTATUS.DOWNLOADING);
       _downloadTasks[source] = info;
 
-      await _downloadNowToFile(scheme, host, port, path, destination);
+      await _downloadNowToFile(scheme, host, port, path, query, destination);
       _downloadTasks.remove(info.source);
       unawaited(_downloadNext());
     } catch (error, stacktrace) {
@@ -430,8 +439,8 @@ class FileMgr {
     if (info != null) {
       info.status = _DOWNLOADINFOSTATUS.DOWNLOADING;
       try {
-        await _downloadNowToFile(
-            info.scheme, info.host, info.port, info.path, info.destination);
+        await _downloadNowToFile(info.scheme, info.host, info.port, info.path,
+            info.query, info.destination);
       } catch (error, stacktrace) {
         _fileDownloadInject
             .add(FileDownloadEvent.error(info.source, info.destination));
@@ -509,6 +518,7 @@ class _DownloadInfo {
   final String host;
   final int port;
   final String path;
+  final String query;
 
   /// The url to download from
   late final String source;
@@ -523,9 +533,10 @@ class _DownloadInfo {
       required this.host,
       required this.port,
       required this.path,
+      required this.query,
       required this.destination,
       required this.status}) {
-    source = "$scheme://$host:$port/$path";
+    source = "$scheme://$host:$port/$path?$query";
   }
 
   @override
