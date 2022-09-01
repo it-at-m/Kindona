@@ -43,6 +43,10 @@ class PositionService {
     bleService.stopPositioning();
   }
 
+  void setBeacons(List<Beacon> beacons) {
+    bleService.setBeacons(beacons);
+  }
+
   void _newGpsPositon(Position p) {
     if (!_bleActive) {
       _inject.add(Pos(p.latitude, p.longitude));

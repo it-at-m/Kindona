@@ -1,3 +1,4 @@
+import 'package:admintool/map/BeaconExtractor.dart';
 import 'package:admintool/map/UserPositionMarker.dart';
 import 'package:admintool/services/ble_service.dart';
 import 'package:admintool/services/position_service.dart';
@@ -130,6 +131,8 @@ class MapViewPageState2 extends State<MapViewPage2> {
   _setViewModelLocationToPosition() {
     if (viewModel != null && _pos != null) {
       viewModel!.setMapViewPosition(_pos!.lat, _pos!.lon);
+      BeaconExtractor.extractBeacons(widget.mapFile!, _pos!)
+        .then((value) { if (value.length >= 3) gps.setBeacons(value);});
     }
   }
 
