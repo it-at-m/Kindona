@@ -13,6 +13,7 @@ import 'package:epitaph_ips/epitaph_ips/tracking/simple_ukf.dart';
 import 'package:epitaph_ips/epitaph_ips/tracking/tracker.dart';
 import 'package:flutter_beacon/flutter_beacon.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:mapsforge_flutter/core.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:epitaph_ips/epitaph_ips/positioning_system/beacon.dart' as epi;
 import 'package:ml_linalg/linalg.dart';
@@ -172,11 +173,16 @@ class Beacon {
   Beacon(this.id, this.position);
 }
 
-class Pos {
+class Pos implements ILatLong {
   final double lat;
   final double lon;
   double altitude;
   Pos(this.lat, this.lon, {this.altitude = 0});
+
+  @override
+  get latitude => lat;
+  @override
+  get longitude => lon;
 
   factory Pos.fromPosition(Position p) {
     return Pos(p.latitude, p.longitude);

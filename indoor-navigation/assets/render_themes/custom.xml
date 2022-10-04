@@ -343,11 +343,11 @@
         <!-- indoor symbols -->
 
         <rule e="any" k="highway" v="elevator" zoom-min="18">
-            <symbol src="assets/icons/elevator.svg"/>
+            <symbol src="assets/icons/elevator.svg" symbol-percent="20"/>
         </rule>
 
         <rule e="any" k="stairs" v="yes" zoom-min="20">
-            <symbol src="assets/icons/stairs.svg"/>
+            <symbol src="assets/icons/stairs.svg" symbol-percent="20"/>
         </rule>
 
         <rule e="any" k="shop" v="*" zoom-min="18">
@@ -356,12 +356,12 @@
 
         <rule e="any" k="amenity" v="*">
             <rule e="any" k="*" v="toilets" zoom-min="18">
-                <symbol src="assets/icons/wc.svg"/>
+                <symbol src="assets/icons/wc.svg" symbol-percent="20"/>
                 <rule e="any" k="female" v="yes">
-                    <symbol src="assets/icons/wc_female.svg"/>
+                    <symbol src="assets/icons/wc_female.svg" symbol-percent="20"/>
                 </rule>
                 <rule e="any" k="male" v="yes">
-                    <symbol src="assets/icons/wc_male.svg"/>
+                    <symbol src="assets/icons/wc_male.svg" symbol-percent="20"/>
                 </rule>
             </rule>
 

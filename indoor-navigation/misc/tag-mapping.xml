@@ -157,13 +157,15 @@
 
     <!-- INDOOR TAGS -->
     <ways>
-        <osm-tag key="highway" value="elevator" zoom-appear="13" />
-        <osm-tag key="indoor" value="room" zoom-appear="18"/>
-        <osm-tag key="indoor" value="area" zoom-appear="18"/>
-        <osm-tag key="indoor" value="wall" zoom-appear="18"/>
-        <osm-tag key="indoor" value="corridor" zoom-appear="18"/>
+        <osm-tag key="highway" value="elevator" zoom-appear="13" label-position="true" />
+        <osm-tag key="indoor" value="room" zoom-appear="18" label-position="true" />
+        <osm-tag key="indoor" value="area" zoom-appear="18" label-position="true" />
+        <osm-tag key="indoor" value="wall" zoom-appear="18" />
+        <osm-tag key="indoor" value="corridor" zoom-appear="18" label-position="true" />
         <osm-tag key="indoor" value="level" zoom-appear="18"/>
         <osm-tag key="indoor" value="beacon" zoom-appear="18"/>
+        <osm-tag key="indoor" value="beacon" zoom-appear="18"/>
+        <osm-tag key="indoor" value="path" zoom-appear="18"/>
         <osm-tag key="id" value="%s" zoom-appear="18"/>
     </ways>
     
@@ -176,6 +178,10 @@
         <osm-tag key="level" value="%s" zoom-appear="18"/>
         <osm-tag key="repeat_on" value="%f" zoom-appear="18"/>
         <osm-tag key="repeat_on" value="%s" zoom-appear="18"/>
+        <osm-tag key="pathfor" value="F" zoom-appear="18"/>
+        <osm-tag key="stairs" value="yes" zoom-appear="18"/>
+        <osm-tag key="male" value="yes" zoom-appear="18"/>
+        <osm-tag key="female" value="yes" zoom-appear="18"/>
     </ways>
     
     <!-- problems with %s for pois in mapfile-writer -> need to specify every used level -->
@@ -189,19 +195,15 @@
         <osm-tag key="level" value="3" zoom-appear="18"/>
         <osm-tag key="level" value="4" zoom-appear="18"/>
         <osm-tag key="level" value="5" zoom-appear="18"/>
+        <osm-tag key="level" value="1;2;3;4;5;6" zoom-appear="18"/>
         <osm-tag key="door" value="yes" zoom-appear="18"/>
         <osm-tag key="entrance" value="yes" zoom-appear="18"/>
         <osm-tag key="access" value="yes|no" zoom-appear="18"/>
+        <osm-tag key="access" value="yes" zoom-appear="18"/>
         <osm-tag key="repeat_on" value="%f" zoom-appear="18"/>
-        <osm-tag key="repeat_on" value="-2" zoom-appear="18"/>
-        <osm-tag key="repeat_on" value="-1" zoom-appear="18"/>
-        <osm-tag key="repeat_on" value="0" zoom-appear="18"/>
-        <osm-tag key="repeat_on" value="1" zoom-appear="18"/>
-        <osm-tag key="repeat_on" value="2" zoom-appear="18"/>
-        <osm-tag key="repeat_on" value="3" zoom-appear="18"/>
-        <osm-tag key="repeat_on" value="4" zoom-appear="18"/>
-        <osm-tag key="repeat_on" value="5" zoom-appear="18"/>
-        <osm-tag key="id" value="E4:E1:12:9B:09:F0" zoom-appear="18"/>
+        <osm-tag key="repeat_on" value="%s" zoom-appear="18"/>
+        <osm-tag key="male" value="yes" zoom-appear="18"/>
+        <osm-tag key="female" value="yes" zoom-appear="18"/>
         <osm-tag key="id" value="%s" zoom-appear="18"/>
         <osm-tag key="indoor" value="beacon" zoom-appear="18"/>
     </pois>
@@ -229,7 +231,7 @@
         <osm-tag key="highway" value="secondary_link" zoom-appear="12" />
         <osm-tag key="highway" value="service" zoom-appear="14" />
         <osm-tag key="highway" value="services" zoom-appear="14" />
-        <osm-tag key="highway" value="steps" zoom-appear="16" />
+        <osm-tag key="highway" value="steps" zoom-appear="16" label-position="true" />
         <osm-tag key="highway" value="tertiary" zoom-appear="12" />
         <osm-tag key="highway" value="tertiary_link" zoom-appear="12" />
         <osm-tag key="highway" value="track" zoom-appear="13" />

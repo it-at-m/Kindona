@@ -5,10 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:indoor_navigation/map/BeaconExtractor.dart';
 import 'package:indoor_navigation/map/PositionOverlay.dart';
 import 'package:indoor_navigation/map/UserPositionMarker.dart';
+import 'package:indoor_navigation/navigation/navigation.dart';
 import 'package:indoor_navigation/services/ble_service.dart';
 import 'package:indoor_navigation/services/position_service.dart';
 import 'package:mapsforge_flutter/core.dart';
 import 'package:mapsforge_flutter/maps.dart';
+import 'package:mapsforge_flutter/marker.dart';
 
 class MapView extends StatefulWidget {
   final MapFile mapFile;
@@ -19,7 +21,7 @@ class MapView extends StatefulWidget {
   State<MapView> createState() => _MapViewState();
 }
 class _MapViewState extends State<MapView> {
-  final DisplayModel displayModel = DisplayModel();
+  final DisplayModel displayModel = DisplayModel(fontScaleFactor: 0.5);
 
   final PositionService gps = PositionService();
   Pos? _pos;
@@ -73,6 +75,23 @@ class _MapViewState extends State<MapView> {
 
     mapModel.markerDataStores
         .add(UserPositionMarker(symbolCache: symbolCache));
+
+    var mapBbox = widget.mapFile.boundingBox;
+    var rooms = await Navigation()
+        .readEnvironment(widget.mapFile,  Pos(mapBbox.maxLatitude, mapBbox.minLongitude), Pos(mapBbox.minLatitude, mapBbox.maxLongitude));
+
+    BeaconExtractor.extractBeacons(widget.mapFile)
+        .then((value) { if (value.length >= 3) gps.setBeacons(value);});
+
+    var from = rooms[0];
+
+
+    var to = rooms.where((e) => e.level == '1' && e.name == '3').first;
+    var store = MarkerDataStore();
+    store.addMarker(
+      fromPath(Navigation().navigate(from, to))
+    );
+    mapModel.markerDataStores.add(store);
     // Glue everything together into two models.
     return mapModel;
   }
@@ -82,10 +101,11 @@ class _MapViewState extends State<MapView> {
     model.setMapViewPosition(52.5211, 13.3905);
     model.setZoomLevel(16);
     model.addOverlay(IndoorlevelZoomOverlay(model,
-      indoorLevels: const {1: 'OG', 0: 'EG', -1: 'UG'},
+      indoorLevels: const {6: '6', 5: '5', 4: '4', 3: '3', 2: '2', 1: '1', 0: 'EG'},
     ));
     model.addOverlay(DistanceOverlay(model));
     model.addOverlay(PositionOverlay(onPressed: _setViewModelLocationToPosition, position: () => _pos));
+
     model.setMapViewPosition(48.17681816301853, 11.534292173877581);
     model.setZoomLevel(18);
     viewModel = model;
@@ -95,8 +115,6 @@ class _MapViewState extends State<MapView> {
   _setViewModelLocationToPosition() {
     if (viewModel != null && _pos != null) {
       viewModel!.setMapViewPosition(_pos!.lat, _pos!.lon);
-      BeaconExtractor.extractBeacons(widget.mapFile, _pos!)
-          .then((value) { if (value.length >= 3) gps.setBeacons(value);});
     }
   }
 }

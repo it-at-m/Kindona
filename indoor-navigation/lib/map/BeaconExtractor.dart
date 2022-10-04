@@ -5,9 +5,9 @@ import 'package:mapsforge_flutter/maps.dart';
 
 class BeaconExtractor {
 
-  static Future<List<Beacon>> extractBeacons(MapDataStore map, Pos location) {
-    var bbox = [location.lon - 0.0001, location.lon + 0.0001,
-      location.lat - 0.0002, location.lat + 0.0002];
+  static Future<List<Beacon>> extractBeacons(MapDataStore map) {
+    var bbox = [map.boundingBox!.minLongitude, map.boundingBox!.maxLongitude,
+      map.boundingBox!.minLatitude, map.boundingBox!.maxLatitude];
 
     var projection = MercatorProjection.fromZoomlevel(18);
     var tileX1 = projection.longitudeToTileX(bbox[0]);

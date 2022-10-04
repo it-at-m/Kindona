@@ -7,8 +7,8 @@ import 'map-download-page.dart';
 import 'map-file-data.dart';
 
 const mapFileData =  MapFileData(
-    url: "https://firebasestorage.googleapis.com/v0/b/kid-demo-a83a4.appspot.com/o/out.map?alt=media&token=0c4fcf3a-eb9a-49fa-8731-f67fc1d943e7",
-    fileName: "out.map",
+    url: "https://firebasestorage.googleapis.com/v0/b/kid-demo-a83a4.appspot.com/o/muenchen_2.map?alt=media&token=b2056f66-d0fc-430a-8dff-796116cad428",
+    fileName: "munchen_5.map",
     displayedName: "LHM Indoor Map Prototype",
     initialPositionLat: 50.81348,
     initialPositionLong: 12.92936,
