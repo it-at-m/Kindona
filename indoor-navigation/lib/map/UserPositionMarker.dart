@@ -1,8 +1,6 @@
 import 'dart:async';
 
-import 'package:admintool/services/gps_service.dart';
-import 'package:admintool/services/position_service.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:indoor_navigation/services/position_service.dart';
 import 'package:mapsforge_flutter/core.dart';
 import 'package:mapsforge_flutter/marker.dart';
 

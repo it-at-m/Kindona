@@ -1,8 +1,7 @@
 import 'dart:async';
 
-import 'package:admintool/services/ble_service.dart';
-import 'package:admintool/services/gps_service.dart';
-import 'package:admintool/views/ble_debug.dart';
+import 'package:indoor_navigation/services/ble_service.dart';
+import 'package:indoor_navigation/services/gps_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rxdart/rxdart.dart';
 
