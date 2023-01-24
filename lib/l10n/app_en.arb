@@ -1,0 +1,38 @@
+{
+  "apptitle": "Indoor Navigation",
+  "@apptitle": {
+    "description": "Title of the application"
+  },
+  "loadinghint": "Loading Data",
+  "@loadinghint": {
+    "description": "Text to show in loading screen"
+   },
+  "navigationtarget": "Destination",
+  "@navigationtarget": {
+    "description": "Navigation end point"
+   },
+  "navigationstart": "Start",
+  "@navigationstart": {
+    "description": "Navigation start point"
+  },
+  "search": "Search",
+  "@search": {
+    "description": "Text for search hint"
+  },
+  "publictoilet": "WC",
+  "@publictoilet": {
+    "description": "Toilet, no specific gender or unknown"
+  },
+  "publictoiletmale": "WC (male)",
+  "@publictoiletmale": {
+    "description": "Toilet, for males"
+  },
+  "publictoiletfemale": "WC (female)",
+  "floor": "Floor",
+  "@floor": {
+    "description": "Floor"
+  },
+  "@publictoiletfemale": {
+    "description": "Toilet, for females"
+  }
+}

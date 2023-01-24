@@ -1,0 +1,11 @@
+{
+    "loadinghint": "Lade Daten",
+    "apptitle": "Indoor Navigator",
+    "navigationtarget" : "Ziel",
+    "navigationstart": "Start",
+    "search": "Suchen",
+    "publictoilet": "WC",
+    "publictoiletmale": "Herren-WC",
+    "publictoiletfemale": "Damen-WC",
+    "floor": "Stock"
+}
