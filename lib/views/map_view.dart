@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:indoor_navigation/context/map_context.dart';
 import 'package:indoor_navigation/map/user_position_marker.dart';
 import 'package:indoor_navigation/navigation/navigation.dart';
@@ -20,7 +21,7 @@ class MapView extends StatefulWidget {
 }
 class _MapViewState extends State<MapView> {
 
-  final PositionService gps = PositionService();
+  late PositionService gps;
   Pos? _pos;
   late StreamSubscription sub;
   late StreamSubscription subRoute;
@@ -28,6 +29,13 @@ class _MapViewState extends State<MapView> {
 
   @override
   Widget build(BuildContext context) {
+    if (!kIsWeb) {
+      gps = MapContext
+          .of(context)
+          .positionService;
+      gps.startPositioning();
+    }
+
     var mapFile = MapContext.of(context).map;
 
     var viewModel = MapContext.of(context).viewModel;
@@ -50,18 +58,19 @@ class _MapViewState extends State<MapView> {
   void initState() {
     super.initState();
     sub = PositionService.observe.listen((pos) => setState(() => _pos = pos));
-    gps.startPositioning();
     subRoute = SelectedRoute.observe.listen(_buildWayMarker);
   }
 
   @override
   void dispose() {
-    gps.stopPositioning();
     sub.cancel();
     subRoute.cancel();
     tapListener?.cancel();
     positionListener?.cancel();
     roomListener?.cancel();
+    if (!kIsWeb) {
+      gps.stopPositioning();
+    }
     super.dispose();
   }
 
@@ -74,7 +83,6 @@ class _MapViewState extends State<MapView> {
       );
     }
   }
-
 
   StreamSubscription? tapListener;
   StreamSubscription? positionListener;

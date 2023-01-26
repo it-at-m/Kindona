@@ -34,21 +34,13 @@ class BleService {
 
   late CoordinationSystemConverter _coords;
 
-  final List<dynamic> uuids = [
-    'E4:E1:12:9B:0B:98',
-    'E4:E1:12:9A:49:EB',
-    'E4:E1:12:9A:4A:0F',
-    'E4:E1:12:9A:49:C3',
-    'E4:E1:12:9A:4A:03'
-  ];
-
   Function? onLocationServicesDisabled;
   Function? onBluetoothDisabled;
 
   late Tracker _tracker;
   late LMA _lma;
 
-  final Region region = Region(identifier: "com.beacon", proximityUUID: '626C756B-6969-2E63-6F6D-626561636F6E');
+  final Region region = Region(identifier: 'changememaybe' /*,proximityUUID: 'consider setting this if you are using ibeacons' */);
 
   BleService({
     this.onLocationServicesDisabled,
@@ -84,6 +76,9 @@ class BleService {
 
   StreamSubscription<RangingResult>? rangingStream;
   void startPositioning() async {
+    if (rangingStream != null) {
+      return;
+    }
     var locationEnabled = await flutterBeacon.checkLocationServicesIfEnabled;
     if (!locationEnabled) {
       onLocationServicesDisabled?.call();
@@ -155,6 +150,7 @@ class BleService {
       b = epi.RealBeacon(beacon.id, beacon.id, p);
       this.beacons[beacon.id] = b;
     }
+
   }
 }
 

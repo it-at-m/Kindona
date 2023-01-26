@@ -3,7 +3,7 @@
 ## What is KID?
 
 KID is a flutter-based application for helping users orientate inside of buildings. It provides the user
-with a map (like google maps and the like), with the option to differentiate between the different
+with a map (similar google maps and the like), with the option to differentiate between the different
 floors inside the building.
 
 ## How can I use KID?
@@ -25,3 +25,12 @@ describes cropping and converting an existing OSM-Map to the mapsforge format. A
 want to include your own custom data for the inside of the building which usually is not covered by
 the OSM maps. Therefore another guide was written to cover that part and can be found
 [here](docs/map-creation.md) in the repository.
+
+## How to build
+
+The application is based on [flutter](https://flutter.dev/) which is required to build the app.
+Once flutter is properly set up you can run the app with
+
+```
+flutter run
+```

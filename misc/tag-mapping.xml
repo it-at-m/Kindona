@@ -151,7 +151,7 @@
         <osm-tag key="aeroway" value="gate" zoom-appear="17" />
         <osm-tag key="aeroway" value="helipad" zoom-appear="17" />
     </pois>
-	
+
 
     <!-- ************* WAYS *************** -->
 
@@ -168,11 +168,11 @@
         <osm-tag key="indoor" value="path" zoom-appear="18"/>
         <osm-tag key="id" value="%s" zoom-appear="18"/>
     </ways>
-    
+
     <pois>
         <osm-tag key="support" value="column" zoom-appear="18"/>
     </pois>
-    
+
     <ways>
         <osm-tag key="level" value="%f" zoom-appear="18"/>
         <osm-tag key="level" value="%s" zoom-appear="18"/>
@@ -183,7 +183,7 @@
         <osm-tag key="male" value="yes" zoom-appear="18"/>
         <osm-tag key="female" value="yes" zoom-appear="18"/>
     </ways>
-    
+
     <!-- problems with %s for pois in mapfile-writer -> need to specify every used level -->
     <pois>
         <osm-tag key="level" value="%f" zoom-appear="18"/>

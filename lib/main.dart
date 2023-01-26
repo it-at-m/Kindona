@@ -1,5 +1,5 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:indoor_navigation/context/map_context.dart';
 import 'package:indoor_navigation/map/extractor/beacon_extractor.dart';
 import 'package:indoor_navigation/map/extractor/level_extractor.dart';
@@ -20,8 +20,17 @@ class MyApp extends StatelessWidget {
 
   const MyApp({super.key});
 
-  Future<MapContext> _initialize(Widget child) async {
-    var map = await MapFile.using((await rootBundle.load(mapsrc)).buffer.asUint8List(), null, null);
+  Future<MapContext> _initialize(BuildContext ctx, Widget child) async {
+    MapFile map;
+    if (kIsWeb) {
+      map = await MapFile.using(
+          (await DefaultAssetBundle.of(ctx).load("assets/$mapsrc")).buffer.asUint8List(),
+          null, null);
+    } else {
+      map = await MapFile.using(
+          (await DefaultAssetBundle.of(ctx).load(mapsrc)).buffer.asUint8List(),
+          null, null);
+    }
     var indoorMap = await readEnvironment(map);
     var beacons = await BeaconExtractor.extractBeacons(map);
     var levels = await LevelExtractor.extractLevels(map);
@@ -80,7 +89,7 @@ class MyApp extends StatelessWidget {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: FutureBuilder(
-              future: _initialize(const HomeView()),
+              future: _initialize(context, const HomeView()),
               builder: (context, snapshot) =>
               snapshot.connectionState != ConnectionState.done ? const LoadingView()
                   : snapshot.requireData
