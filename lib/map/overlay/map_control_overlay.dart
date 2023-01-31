@@ -10,7 +10,7 @@ class MapControlOverlay extends StatefulWidget {
   final ViewModel viewModel;
   final Map<int, String?>? indoorLevels;
   final void Function() onPressed;
-  final Pos? Function() position;
+  final Stream<Pos?> position;
 
   const MapControlOverlay({super.key, required this.viewModel, this.indoorLevels, required this.onPressed, required this.position});
 

@@ -20,8 +20,8 @@ class TopBar extends StatefulWidget {
 
 class _TopBarState extends State<TopBar> with TickerProviderStateMixin {
 
-  Room? from;
-  Room? to;
+  IndoorNode? from;
+  IndoorNode? to;
 
   late AnimationController _appBarController;
   late AnimationController _routeController;
@@ -71,7 +71,7 @@ class _TopBarState extends State<TopBar> with TickerProviderStateMixin {
     ));
   }
 
-  void _navigateToRoomRequest(Room room) {
+  void _navigateToRoomRequest(IndoorNode room) {
     to = room;
     transition(BarOverlayState.routeOverlay);
   }
@@ -233,15 +233,16 @@ class _TopBarState extends State<TopBar> with TickerProviderStateMixin {
     );
   }
 
-  _moveToRoom(Room? room) {
+  _moveToRoom(IndoorNode? room) {
     if (room == null) return;
+    if (room is YourPosition) return;
     var viewModel = MapContext.of(context).viewModel;
     viewModel.setIndoorLevel(room.level);
     viewModel.setMapViewPosition(room.latLong.latitude, room.latLong.longitude);
     if (viewModel.mapViewPosition!.zoomLevel < 18) {
       viewModel.setZoomLevel(18);
     }
-    MapContext.of(context).roomStream.value = room;
+    MapContext.of(context).roomStream.value = room as Room;
   }
 
   Widget _createOverlay(BuildContext context) {
@@ -310,15 +311,15 @@ class _TopBarState extends State<TopBar> with TickerProviderStateMixin {
   Widget _buildDropdown(BuildContext context, {
     required String hint,
     required  Icon icon,
-    Room? initial,
-    required  void Function(Room?) onChanged}) {
+    IndoorNode? initial,
+    required  void Function(IndoorNode?) onChanged}) {
     String initialEdit = "";
     if (initial != null) {
       initialEdit = roomLabel(context, initial);
     }
     return  Container(
         padding: const EdgeInsets.all(5),
-        child: Autocomplete<Object>(
+        child: Autocomplete<IndoorNode>(
           initialValue: TextEditingValue(text: initialEdit),
           fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) => TextFormField(
             decoration: InputDecoration(
@@ -332,19 +333,19 @@ class _TopBarState extends State<TopBar> with TickerProviderStateMixin {
             onFieldSubmitted: (text) => onFieldSubmitted(),
           ),
           optionsBuilder: (filter) {
-            Iterable<Object> rooms = MapContext.of(context).rooms.where((room) => roomLabel(context, room).contains(filter.text.replaceAll(r"\s+", "")));
+            Iterable<IndoorNode> rooms = MapContext.of(context).rooms.where((room) => roomLabel(context, room).contains(filter.text.replaceAll(r"\s+", "")));
             if (filter.text.isEmpty) {
-              rooms = <Object>["Your Position"].followedBy(rooms);
+              rooms = <IndoorNode>[YourPosition()].followedBy(rooms);
             }
             return rooms;
           },
-          displayStringForOption: (room) => room is Room ? roomLabel(context, room) : room.toString(),
-          onSelected: (val) {  if (val is Room) onChanged(val); },
+          displayStringForOption: (room) => room is Room ? roomLabel(context, room) : AppLocalizations.of(context)!.yourposition,
+          onSelected: (val) {  onChanged(val); },
           optionsViewBuilder: (context, onSelected, options) => _autoCompleteOption(context, onSelected, options),
         ));
   }
 
-  Widget _autoCompleteOption(BuildContext context, onSelected, Iterable<Object> options) {
+  Widget _autoCompleteOption(BuildContext context, onSelected, Iterable<IndoorNode> options) {
     return Align(
         alignment: Alignment.topLeft,
         child: Material(
@@ -379,9 +380,8 @@ class _TopBarState extends State<TopBar> with TickerProviderStateMixin {
                               color: highlight ? Theme.of(context).focusColor : null,
                               padding: const EdgeInsets.all(16.0),
                               child: Row(children: [
-                                Icon(option is IndoorNode ? getRoomIcon(option) : Icons.my_location),
-                                option is Room ? Text(roomLabel(context, option))
-                                  : Text(option.toString())
+                                Icon(option is Room ? getRoomIcon(option) : Icons.my_location),
+                                Text(roomLabel(context, option))
                               ]),
                             );
                           }
@@ -394,16 +394,19 @@ class _TopBarState extends State<TopBar> with TickerProviderStateMixin {
     );
   }
 
-  String roomLabel(BuildContext context, Room room) {
-    return "${(room).name} (${AppLocalizations.of(context)!.floor} ${room.level})";
+  String roomLabel(BuildContext context, IndoorNode room) {
+    if (room is YourPosition) {
+      return AppLocalizations.of(context)!.yourposition;
+    }
+    return "${(room as Room).name} (${AppLocalizations.of(context)!.floor} ${room.level})";
   }
 
-  void _setFrom(Room? room) {
+  void _setFrom(IndoorNode? room) {
     from = room;
     _updateSelectedRoute();
   }
 
-  void _setTo(Room? room) {
+  void _setTo(IndoorNode? room) {
     to = room;
     _updateSelectedRoute();
   }

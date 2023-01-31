@@ -26,6 +26,10 @@ class IndoorNode extends Vertex with Node<IndoorNode> {
   }
 }
 
+class YourPosition extends IndoorNode {
+  YourPosition() : super("YourPosition", latLong: const LatLong(0, 0), level: 0);
+}
+
 abstract class IndoorWay extends IndoorNode {
   final Way way;
 

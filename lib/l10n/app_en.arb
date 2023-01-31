@@ -1,5 +1,5 @@
 {
-  "apptitle": "Indoor Navigation",
+  "apptitle": "Kindona",
   "@apptitle": {
     "description": "Title of the application"
   },
@@ -28,11 +28,15 @@
     "description": "Toilet, for males"
   },
   "publictoiletfemale": "WC (female)",
+  "@publictoiletfemale": {
+    "description": "Toilet, for females"
+  },
   "floor": "Floor",
   "@floor": {
     "description": "Floor"
   },
-  "@publictoiletfemale": {
-    "description": "Toilet, for females"
+  "yourposition": "Your Position",
+  "@yourposition": {
+    "description": "Menu item for your current position"
   }
 }

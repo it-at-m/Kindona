@@ -44,6 +44,7 @@ dependencies:
   mapsforge_flutter: 2.0.2
   a_star: 1.0.0
   polylabel: 1.0.1
+  ml_linalg: 13.11.28
 
 dev_dependencies:
   flutter_test:

@@ -8,9 +8,9 @@ import 'package:rxdart/rxdart.dart';
 
 class PositionService {
 
-  static final Subject<Pos> _inject = BehaviorSubject<Pos>();
+  static final BehaviorSubject<Pos> inject = BehaviorSubject<Pos>();
 
-  static Stream<Pos> get observe => _inject.stream;
+  static Stream<Pos> get observe => inject.stream;
 
   final GpsService gpsService = GpsService();
   final BleService bleService = BleService();
@@ -55,12 +55,12 @@ class PositionService {
 
   void _newGpsPositon(Position p) {
     if (!_bleActive) {
-      _inject.add(Pos(p.latitude, p.longitude));
+      inject.add(Pos(p.latitude, p.longitude));
     }
   }
 
   void _newBlePosition(Pos p) {
-    _inject.add(p);
+    inject.add(p);
     _resetTimer();
     _bleActive = true;
   }

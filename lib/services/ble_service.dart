@@ -40,7 +40,9 @@ class BleService {
   late Tracker _tracker;
   late LMA _lma;
 
-  final Region region = Region(identifier: 'changememaybe' /*,proximityUUID: 'consider setting this if you are using ibeacons' */);
+  // Set the proximityUUID to the uuid of your iBeacons to prefilter
+  // the discovered ble devices
+  final Region region = Region(identifier: 'changememaybe' /*,proximityUUID: 'considerchangingme'*/);
 
   BleService({
     this.onLocationServicesDisabled,

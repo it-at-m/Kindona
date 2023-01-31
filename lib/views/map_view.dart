@@ -21,7 +21,7 @@ class MapView extends StatefulWidget {
 }
 class _MapViewState extends State<MapView> {
 
-  late PositionService gps;
+  PositionService? gps;
   Pos? _pos;
   late StreamSubscription sub;
   late StreamSubscription subRoute;
@@ -29,11 +29,11 @@ class _MapViewState extends State<MapView> {
 
   @override
   Widget build(BuildContext context) {
-    if (!kIsWeb) {
+    if (!kIsWeb && gps == null) {
       gps = MapContext
           .of(context)
           .positionService;
-      gps.startPositioning();
+      gps!.startPositioning();
     }
 
     var mapFile = MapContext.of(context).map;
@@ -47,7 +47,7 @@ class _MapViewState extends State<MapView> {
         viewModel: viewModel,
         indoorLevels: MapContext.of(context).levels,
         onPressed: _setViewModelLocationToPosition,
-        position: () => _pos
+        position: PositionService.observe
     ));
     viewModel.addOverlay(DistanceOverlay(viewModel));
 
@@ -57,7 +57,7 @@ class _MapViewState extends State<MapView> {
   @override
   void initState() {
     super.initState();
-    sub = PositionService.observe.listen((pos) => setState(() => _pos = pos));
+    sub = PositionService.observe.listen((pos) => _pos = pos);
     subRoute = SelectedRoute.observe.listen(_buildWayMarker);
   }
 
@@ -69,19 +69,57 @@ class _MapViewState extends State<MapView> {
     positionListener?.cancel();
     roomListener?.cancel();
     if (!kIsWeb) {
-      gps.stopPositioning();
+      gps?.stopPositioning();
     }
     super.dispose();
   }
 
-  void _buildWayMarker(List<Room> route) {
+  void _buildWayMarker(List<IndoorNode> route) {
     if (route.length >= 2) {
+      var from = route[0];
+      var to = route[1];
+      if (from is YourPosition) {
+        from = retrieveYourPosition();
+      }
+      if (to is YourPosition) {
+        to = retrieveYourPosition();
+      }
+
+      var path = navigate(MapContext.of(context).indoorMap, from, to).toList();
+
+      if (from.id == 'outside') {
+        path[0] = IndoorNode("ypf", latLong: PositionService.inject.value, level: 0);
+      }
+
+      if (to.id == 'outside') {
+        path[path.length-1] = IndoorNode("ypt", latLong: PositionService.inject.value, level: 0);
+      }
+
       markerStore.addMarker(
-          fromPath(MapContext.of(context).displayModel,
-              navigate(MapContext.of(context).indoorMap, route[0], route[1]).toList())
+          fromPath(MapContext.of(context).displayModel, path)
             ..item = "wayMarker"
       );
     }
+  }
+
+  IndoorNode retrieveYourPosition() {
+
+    var position = PositionService.inject.value;
+
+    // Ignores level of position, how am I supposed to know that, huh?
+    var maybeRoom = MapContext.of(context)
+        .indoorMap.graph.keys.whereType<IndoorWay>()
+        .where((element) => containsPoint(element.way, position));
+
+    IndoorNode room;
+    if (maybeRoom.isNotEmpty) {
+      room = maybeRoom.first;
+    } else {
+      room = MapContext.of(context)
+          .indoorMap.outside;
+    }
+
+    return room;
   }
 
   StreamSubscription? tapListener;

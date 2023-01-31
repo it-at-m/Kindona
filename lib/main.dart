@@ -84,7 +84,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return
       MaterialApp(
-          title: 'Flutter Demo',
+          title: 'Kindona Demo',
           theme: ThemeData(colorScheme: const ColorScheme.light()),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
